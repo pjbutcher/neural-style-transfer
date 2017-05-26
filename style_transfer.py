@@ -1,4 +1,5 @@
 import argparse
+import sys
 import numpy as np
 from keras import backend as K
 from keras import metrics
@@ -72,14 +73,25 @@ parser.add_argument('content')
 parser.add_argument('style')
 parser.add_argument('--output_final')
 parser.add_argument('--output_iters')
+parser.add_argument('weights', nargs='*', default=[0.05, 0.2, 0.2, 0.25, 0.3])
+parser.add_argument('--iters', default=20)
 args = parser.parse_args()
+
+
+# style_wgts = [0.05, 0.2, 0.2, 0.25, 0.3]
+# style_wgts = [0.02, 0.1, 0.1, 0.15, 0.15]
+if len(args.weights) != 5:
+    print('weights argument requires 5 values.')
+
+style_wgts = list(map(float, args.weights))
+
+iterations = int(args.iters)
+    
+# style_wgts = args.weights
 
 # mean from VGG authors used to preprocess images
 rn_mean = np.array([123.68, 116.779, 103.939], dtype=np.float32)
 
-# style_wgts = [0.05, 0.2, 0.2, 0.25, 0.3]
-style_wgts = [0.02, 0.1, 0.1, 0.15, 0.15]
-iterations = 20
 
 # load and process the content image
 content_img = Image.open(args.content)
@@ -92,9 +104,16 @@ style_img = style_img.resize((content_shape[2], content_shape[1]))
 style_arr = preprocess(np.expand_dims(style_img, 0)[:, :, :, :3], rn_mean)
 style_shape = style_arr.shape
 
+# instantiate vgg model
 model = VGG16_Avg(include_top=False, input_shape=style_shape[1:])
+
+# get a dictionary of the models name:output
 outputs = {l.name: l.output for l in model.layers}
+
+# use block{1-5}_conv2 to recreate style
 style_layers = [outputs['block{}_conv2'.format(o)] for o in range(1, 6)]
+
+# layer to recreate content
 content_name = 'block4_conv2'
 content_layer = outputs[content_name]
 
@@ -137,4 +156,3 @@ if args.output_final is not None:
         deprocess(styled_img.copy(), rn_mean, style_shape)[0]
     )
 
-# x = solve_image(evaluator, iterations, random_img, style_shape)
