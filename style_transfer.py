@@ -7,8 +7,6 @@ from keras.models import Model
 from PIL import Image
 from scipy.optimize import fmin_l_bfgs_b
 from scipy.misc import imsave
-from scipy.ndimage.filters import gaussian_filter
-
 from vgg16_avg import VGG16_Avg
 
 
