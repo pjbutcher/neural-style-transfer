@@ -76,6 +76,7 @@ parser.add_argument('--output_iters')
 parser.add_argument('--weights', nargs='*', default=[0.05, 0.2, 0.2, 0.25, 0.3])
 parser.add_argument('--iters', default=20)
 parser.add_argument('--content_layer', default='block4_conv2')
+parser.add_argument('--style_layers', default=[1, 5])
 args = parser.parse_args()
 
 
@@ -108,10 +109,13 @@ model = VGG16_Avg(include_top=False, input_shape=style_shape[1:])
 outputs = {l.name: l.output for l in model.layers}
 
 # use block{1-5}_conv2 to recreate style
-style_layers = [outputs['block{}_conv2'.format(o)] for o in range(1, 6)]
+sblock = args.style_layers[0]
+eblock = args.style_layers[1]
+style_layers = [outputs['block{}_conv2'.format(o)]
+                for o in range(sblock, eblock+1)]
+# style_layers = [outputs['block{}_conv2'.format(o)] for o in range(1, 6)]
 
 # layer to recreate content
-# content_name = 'block4_conv2'
 content_layer = outputs[content_name]
 
 style_model = Model(model.input, style_layers)
