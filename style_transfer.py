@@ -74,26 +74,21 @@ parser.add_argument('--output_iters')
 parser.add_argument('--weights', nargs='*', default=[0.05, 0.2, 0.2, 0.25, 0.3])
 parser.add_argument('--iters', default=20)
 parser.add_argument('--content_layer', default='block4_conv2')
-parser.add_argument('--style_layers', default=[1, 5, 'conv2'])
+parser.add_argument('--style_layers', nargs='*', default=[1, 5, 'conv2'])
 args = parser.parse_args()
 
 if len(args.style_layers) != 3:
     print('style_layers argument requires 3 values.')
     sys.exit()
 
-sblock = args.style_layers[0]
-eblock = args.style_layers[1]
+sblock = int(args.style_layers[0])
+eblock = int(args.style_layers[1])
 num_sl = eblock - sblock + 1
 
 if num_sl != len(args.weights):
     print('The number of weights needs to match the number of blocks which '
           'will be used for style layers.')
     sys.exit()
-
-
-# if len(args.weights) != 5:
-#     print('weights argument requires 5 values.')
-#     sys.exit()
 
 style_wgts = list(map(float, args.weights))
 iterations = int(args.iters)
@@ -123,7 +118,6 @@ outputs = {l.name: l.output for l in model.layers}
 block_layer = args.style_layers[2]
 style_layers = [outputs['block{}_{}'.format(o, block_layer)]
                 for o in range(sblock, eblock+1)]
-# style_layers = [outputs['block{}_conv2'.format(o)] for o in range(1, 6)]
 
 # layer to recreate content
 content_layer = outputs[content_name]
