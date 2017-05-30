@@ -25,7 +25,7 @@ python style_transfer.py content.png style.png --output_final stylized_img.png
 ## Example
 The image at the beginning of this README was generated from the following content and style images (both are available in the content-imgs and style-imgs directories. I used the first blocks conv layer for the content recreation (fast.ai lesson 8 actually uses block 4's 2nd conv layer) since it gave much nicer results for these content/style images. 
 
-python style_transfer.py content-imgs/pdx_1.jpg style-imgs/starrynightrhone.jpg --output_final results/pdx_1_starrynightrhone_clb1c1_sl15p --iters 10 --content_layer block1_conv1 
+python style_transfer.py content-imgs/pdx_1.jpg style-imgs/starrynightrhone.jpg --output_final pdx_1_starrynightrhone_clb1c1_sl15p --iters 10 --content_layer block1_conv1 
 
 **Content - A nice photo of Portland's downtown waterfront (I'm from Portland):**
 ![alt text](https://github.com/pjbutcher/neural-style-transfer/blob/master/content-imgs/pdx_1.jpg)
