@@ -73,25 +73,22 @@ parser.add_argument('content')
 parser.add_argument('style')
 parser.add_argument('--output_final')
 parser.add_argument('--output_iters')
-parser.add_argument('weights', nargs='*', default=[0.05, 0.2, 0.2, 0.25, 0.3])
+parser.add_argument('--weights', nargs='*', default=[0.05, 0.2, 0.2, 0.25, 0.3])
 parser.add_argument('--iters', default=20)
+parser.add_argument('--content_layer', default='block4_conv2')
 args = parser.parse_args()
 
 
-# style_wgts = [0.05, 0.2, 0.2, 0.25, 0.3]
-# style_wgts = [0.02, 0.1, 0.1, 0.15, 0.15]
 if len(args.weights) != 5:
     print('weights argument requires 5 values.')
+    sys.exit()
 
 style_wgts = list(map(float, args.weights))
-
 iterations = int(args.iters)
-    
-# style_wgts = args.weights
+content_name = args.content_layer
 
 # mean from VGG authors used to preprocess images
 rn_mean = np.array([123.68, 116.779, 103.939], dtype=np.float32)
-
 
 # load and process the content image
 content_img = Image.open(args.content)
@@ -114,7 +111,7 @@ outputs = {l.name: l.output for l in model.layers}
 style_layers = [outputs['block{}_conv2'.format(o)] for o in range(1, 6)]
 
 # layer to recreate content
-content_name = 'block4_conv2'
+# content_name = 'block4_conv2'
 content_layer = outputs[content_name]
 
 style_model = Model(model.input, style_layers)
